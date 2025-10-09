@@ -567,7 +567,20 @@ MonoBehaviour:
   upGrav: 12
   downGrav: 20
   jumpDelay: 0.1
-  attackDelay: 0
+  attackDelay: 0.2
+  attackInfo:
+  - comboState: 1
+    attackDuration: 0.33
+    animationName: PlayerAttack1
+    timeUntilCancelable: 0.25
+  - comboState: 2
+    attackDuration: 0.33
+    animationName: PlayerAttack2
+    timeUntilCancelable: 0.25
+  - comboState: 3
+    attackDuration: 0.33
+    animationName: PlayerAttack3
+    timeUntilCancelable: 0.33
   groundCheck: {fileID: 8955993410433688597}
 --- !u!114 &7928807397650710617
 MonoBehaviour:
@@ -611,7 +624,19 @@ MonoBehaviour:
     m_ActionId: 4940f456-c403-401d-bdfd-0730a28489c3
     m_ActionName: 'Player/Movement[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1543002651269939387}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnAttack
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 5339c373-5384-4112-be81-4f1f6f6d1644
     m_ActionName: 'Player/Attack[/Keyboard/z]'
   - m_PersistentCalls:
