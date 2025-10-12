@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         isGrounded = Physics2D.CircleCast(groundCheck.position, 0.1f, Vector2.zero, Mathf.Infinity, groundLayer.value);
-        if (movement != Vector2.zero) print("PLEASE MOVE");
+        //if (movement != Vector2.zero) print("PLEASE MOVE");
         rb.linearVelocityX = movement.x * Time.fixedDeltaTime * speed;
         playerAnimator.SetBool("IsMoving", Vector2.zero != rb.linearVelocity);
 
@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
         }
         if (attackTracker > 0f && noAttackingTime <= 0f)
         {
-            print("GOO GOO GAA GAA");
+            //print("GOO GOO GAA GAA");
             switch (playerComboState)
             {
 
