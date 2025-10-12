@@ -2,36 +2,35 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using static PlayerController;
+using UnityEditor;
 
 public class PlayerController : MonoBehaviour
 {
 
-    public enum ComboState
-    {
-        Idle,
-        GroundAtt1,
-        GroundAtt2,
-        GroundAtt3
-    }
-
     public float speed;
     public float jumpForce;
+    public float dashForce;
     public LayerMask groundLayer;
     public float upGrav;
     public float downGrav;
     public float jumpDelay;
     public float attackDelay;
+    public string idleAnimName;
     [SerializeField]
     List<AttackStateInfo> attackInfo;
+    [SerializeField]
+    AttackStateInfo airDashAttackInfo;
+    [SerializeField]
+    AttackStateInfo airNeutralAttackInfo;
     [SerializeField]
     Transform groundCheck;
     Animator playerAnimator;
     Vector2 movement;
     Rigidbody2D rb;
     bool isGrounded;
+    bool performedAirAttack;
     float jumpTracker;
     float attackTracker;
-    ComboState playerComboState;
     float timeSinceLastAttack;
     float noAttackingTime;
 
@@ -40,9 +39,9 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         isGrounded = false;
-        playerComboState = ComboState.Idle;
         timeSinceLastAttack = 0;
         noAttackingTime = 0;
+        performedAirAttack = false;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -73,10 +72,17 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        isGrounded = Physics2D.CircleCast(groundCheck.position, 0.1f, Vector2.zero, Mathf.Infinity, groundLayer.value);
-        //if (movement != Vector2.zero) print("PLEASE MOVE");
-        rb.linearVelocityX = movement.x * Time.fixedDeltaTime * speed;
+        bool checkGrounded = Physics2D.CircleCast(groundCheck.position, 0.1f, Vector2.zero, Mathf.Infinity, groundLayer.value);
+        if (checkGrounded && !isGrounded) performedAirAttack = false;
+        if (checkGrounded && !isGrounded) noAttackingTime = 0;
+        playerAnimator.SetBool("InAir", !checkGrounded);
+        isGrounded = checkGrounded;
+
+        if (isGrounded) rb.linearVelocityX = movement.x * Time.fixedDeltaTime * speed;
         playerAnimator.SetBool("IsMoving", Vector2.zero != rb.linearVelocity);
+
+        if (movement.x > 0) transform.localScale = new Vector3(1, 1, 1);
+        else if (movement.x < 0) transform.localScale = new Vector3(-1, 1, 1);
 
         if (jumpTracker > 0f && isGrounded)
         {
@@ -85,80 +91,46 @@ public class PlayerController : MonoBehaviour
         }
         if (attackTracker > 0f && noAttackingTime <= 0f)
         {
-            //print("GOO GOO GAA GAA");
-            switch (playerComboState)
-            {
 
-                case ComboState.Idle:
-                    AttackStateInfo obtainedInfo = attackInfo.Find(x => x.comboState == ComboState.GroundAtt1);
-                    if (obtainedInfo == null)
+            if (isGrounded)
+            {
+                foreach (AttackStateInfo stateInfo in attackInfo)
+                {
+                    if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(stateInfo.currentAnimationName))
                     {
-                        noAttackingTime = 0.25f;
-                        timeSinceLastAttack = 0.333f;
-                        playerAnimator.Play("PlayerAttack1");
-                        playerComboState = ComboState.GroundAtt1;
-                        break;
+                        noAttackingTime = stateInfo.timeUntilCancelable;
+                        playerAnimator.Play(stateInfo.nextAnimationName);
                     }
-                    noAttackingTime = obtainedInfo.timeUntilCancelable;
-                    timeSinceLastAttack = obtainedInfo.attackDuration;
-                    playerAnimator.Play(obtainedInfo.animationName);
-                    playerComboState = ComboState.GroundAtt1;
-                    break;
-                case ComboState.GroundAtt1:
-                    AttackStateInfo obtainedInfo1 = attackInfo.Find(x => x.comboState == ComboState.GroundAtt2);
-                    if (obtainedInfo1 == null)
-                    {
-                        noAttackingTime = 0.25f;
-                        timeSinceLastAttack = 0.333f;
-                        playerAnimator.Play("PlayerAttack1");
-                        playerComboState = ComboState.GroundAtt2;
-                        break;
-                    }
-                    noAttackingTime = obtainedInfo1.timeUntilCancelable;
-                    timeSinceLastAttack = obtainedInfo1.attackDuration;
-                    playerAnimator.Play(obtainedInfo1.animationName);
-                    playerComboState = ComboState.GroundAtt2;
-                    break;
-                case ComboState.GroundAtt2:
-                    AttackStateInfo obtainedInfo2 = attackInfo.Find(x => x.comboState == ComboState.GroundAtt3);
-                    if (obtainedInfo2 == null)
-                    {
-                        noAttackingTime = 0.25f;
-                        timeSinceLastAttack = 0.333f;
-                        playerAnimator.Play("PlayerAttack1");
-                        playerComboState = ComboState.GroundAtt3;
-                        break;
-                    }
-                    noAttackingTime = obtainedInfo2.timeUntilCancelable;
-                    timeSinceLastAttack = obtainedInfo2.attackDuration;
-                    playerAnimator.Play(obtainedInfo2.animationName);
-                    playerComboState = ComboState.GroundAtt3;
-                    break;
-                case ComboState.GroundAtt3:
-                    AttackStateInfo obtainedInfo3 = attackInfo.Find(x => x.comboState == ComboState.GroundAtt3);
-                    if (obtainedInfo3 == null)
-                    {
-                        noAttackingTime = 0.25f;
-                        timeSinceLastAttack = 0.333f;
-                        playerAnimator.Play("PlayerAttack1");
-                        playerComboState = ComboState.Idle;
-                        break;
-                    }
-                    noAttackingTime = obtainedInfo3.timeUntilCancelable;
-                    timeSinceLastAttack = obtainedInfo3.attackDuration;
-                    playerAnimator.Play(obtainedInfo3.animationName);
-                    playerComboState = ComboState.Idle;
-                    break;
-                default:
-                    break;
+                    continue;
+                }
             }
+            else if (!performedAirAttack)
+            {
+                if (movement != Vector2.zero)
+                {
+                    Vector2 move = movement.normalized * dashForce;
+                    move.y *= 0.125f;
+                    if (movement.x == 0) move.y += dashForce * 0.125f;
+                    rb.AddForce(move);
+                    noAttackingTime = airDashAttackInfo.timeUntilCancelable;
+                    playerAnimator.Play(airDashAttackInfo.nextAnimationName);
+                    performedAirAttack = true;
+                }
+                else
+                {
+                    rb.AddForce(Vector2.up * dashForce * 0.125f);
+                    noAttackingTime = airNeutralAttackInfo.timeUntilCancelable;
+                    playerAnimator.Play(airNeutralAttackInfo.nextAnimationName);
+                    performedAirAttack = true;
+                }
+            }
+
         }
 
         attackTracker = Mathf.Clamp(attackTracker - Time.fixedDeltaTime, 0f, Mathf.Infinity);
         jumpTracker = Mathf.Clamp(jumpTracker - Time.fixedDeltaTime, 0f, Mathf.Infinity);
         timeSinceLastAttack = Mathf.Clamp(timeSinceLastAttack - Time.fixedDeltaTime, 0f, Mathf.Infinity);
         noAttackingTime = Mathf.Clamp(noAttackingTime - Time.fixedDeltaTime, 0f, Mathf.Infinity);
-        if (timeSinceLastAttack == 0f) playerComboState = ComboState.Idle;
 
         rb.gravityScale = rb.linearVelocityY > 0 ? upGrav : downGrav;
 
@@ -169,8 +141,7 @@ public class PlayerController : MonoBehaviour
 [System.Serializable]
 class AttackStateInfo
 {
-    public ComboState comboState;
-    public float attackDuration;
-    public string animationName;
+    public string currentAnimationName;
+    public string nextAnimationName;
     public float timeUntilCancelable;
 }
