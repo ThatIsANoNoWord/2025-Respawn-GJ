@@ -3,6 +3,7 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     public GameObject followObject;
+    public GameObject dayNightEffect;
     public float maxXDiff;
     public float maxYDiff;
 
@@ -25,5 +26,8 @@ public class CameraFollow : MonoBehaviour
         {
             transform.position += Vector3.up * (followObject.transform.position.y - transform.position.x + maxYDiff);
         }
+
+        dayNightEffect.transform.position = new Vector3(followObject.transform.position.x, transform.position.y, 0);
+
     }
 }
