@@ -33,6 +33,8 @@ public class PlayerController : MonoBehaviour
     float attackTracker;
     float timeSinceLastAttack;
     float noAttackingTime;
+    
+    public static PlayerController Instance { get; private set; }
 
     private void Start()
     {
@@ -42,6 +44,7 @@ public class PlayerController : MonoBehaviour
         timeSinceLastAttack = 0;
         noAttackingTime = 0;
         performedAirAttack = false;
+        Instance = this;
     }
 
     public void OnMove(InputAction.CallbackContext context)

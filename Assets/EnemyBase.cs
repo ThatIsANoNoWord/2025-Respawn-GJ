@@ -7,13 +7,13 @@ public class EnemyBase : MonoBehaviour
     float currHealth;
     float currStagger;
 
-    private void Start()
+    virtual public void Start()
     {
         currHealth = health;
         currStagger = 0;
     }
 
-    public void TakeDamage(float damage, float stagger)
+    virtual public void TakeDamage(float damage, float stagger)
     {
         currHealth -= damage;
         currStagger += stagger;
