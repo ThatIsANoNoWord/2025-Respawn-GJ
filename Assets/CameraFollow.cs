@@ -24,7 +24,7 @@ public class CameraFollow : MonoBehaviour
         }
         if (followObject.transform.position.y < transform.position.y - maxYDiff)
         {
-            transform.position += Vector3.up * (followObject.transform.position.y - transform.position.x + maxYDiff);
+            transform.position += Vector3.up * (followObject.transform.position.y - transform.position.y + maxYDiff);
         }
 
         dayNightEffect.transform.position = new Vector3(followObject.transform.position.x, transform.position.y, 0);

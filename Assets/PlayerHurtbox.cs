@@ -12,7 +12,7 @@ public class PlayerHurtbox : MonoBehaviour
         hitEnemies = new List<EnemyBase>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         var hitEnemy = collision.GetComponent<EnemyBase>();
         if (hitEnemy != null && !hitEnemies.Contains(hitEnemy))

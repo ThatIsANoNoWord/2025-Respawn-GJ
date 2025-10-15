@@ -788,6 +788,11 @@ MonoBehaviour:
   jumpDelay: 0.1
   attackDelay: 0.1
   idleAnimName: PlayerIdle
+  onHitInvincibility: 1
+  onHitNoMoveTime: 0.3
+  switchCooldown: 10
+  switchInvincible: 0.3
+  switchSuperDuration: 4
   attackInfo:
   - currentAnimationName: PlayerIdle
     nextAnimationName: PlayerAttack1
@@ -813,6 +818,7 @@ MonoBehaviour:
     nextAnimationName: PlayerNeutral
     timeUntilCancelable: 0.3
   groundCheck: {fileID: 8955993410433688597}
+  switchAnimator: {fileID: 0}
 --- !u!114 &7928807397650710617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -886,6 +892,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 1d84fb8a-848f-4e77-bf18-7a3738e1e4b0
     m_ActionName: 'Player/Jump[/Keyboard/upArrow]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1543002651269939387}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnSwitch
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 251beb9b-1cb2-4ad3-b233-a9caf9874432
+    m_ActionName: 'Player/Switch[/Keyboard/x]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard
   m_DefaultActionMap: Player
