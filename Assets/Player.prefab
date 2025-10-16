@@ -663,7 +663,7 @@ GameObject:
   - component: {fileID: 1543002651269939387}
   - component: {fileID: 7928807397650710617}
   - component: {fileID: 7017954592706879666}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -777,8 +777,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9624e62fcebd5e4daa16e95fb675dc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particleGroups: []
   speed: 1000
-  jumpForce: 140000
+  jumpForce: 180000
   dashForce: 120000
   groundLayer:
     serializedVersion: 2
@@ -788,8 +789,8 @@ MonoBehaviour:
   jumpDelay: 0.1
   attackDelay: 0.1
   idleAnimName: PlayerIdle
-  onHitInvincibility: 1
-  onHitNoMoveTime: 0.3
+  onHitInvincibility: 1.5
+  onHitNoMoveTime: 1
   switchCooldown: 10
   switchInvincible: 0.3
   switchSuperDuration: 4
@@ -817,6 +818,10 @@ MonoBehaviour:
     currentAnimationName: 
     nextAnimationName: PlayerNeutral
     timeUntilCancelable: 0.3
+  superAttackInfo:
+    currentAnimationName: 
+    nextAnimationName: PlayerSuperAttack
+    timeUntilCancelable: 0.25
   groundCheck: {fileID: 8955993410433688597}
   switchAnimator: {fileID: 0}
 --- !u!114 &7928807397650710617

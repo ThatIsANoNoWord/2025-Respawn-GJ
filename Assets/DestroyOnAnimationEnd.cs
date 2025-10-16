@@ -1,11 +1,7 @@
 using UnityEngine;
 
-public class GroundAttackPounce : StateMachineBehaviour
+public class DestroyOnAnimationEnd : StateMachineBehaviour
 {
-
-    [SerializeField]
-    Vector2 leapForce;
-
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     //override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     //{
@@ -21,9 +17,7 @@ public class GroundAttackPounce : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Vector2 temp = leapForce;
-        if (animator.gameObject.transform.localScale.x < 0) temp.x *= -1f;
-        animator.gameObject.GetComponent<Rigidbody2D>().AddForce(temp, ForceMode2D.Impulse);
+        Destroy(animator.gameObject);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

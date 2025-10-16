@@ -7,8 +7,7 @@ public class EnemyHurtbox : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        var hitPlayer = collision.GetComponent<PlayerController>();
-        if (hitPlayer != null)
+        if (collision.gameObject.TryGetComponent<PlayerController>(out var hitPlayer))
         {
             hitPlayer.TakeDamage(transform.parent.localScale.x > 0 ? attackForce : new Vector2(-attackForce.x, attackForce.y));
         }
