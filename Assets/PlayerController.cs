@@ -24,6 +24,11 @@ public class PlayerController : MonoBehaviour
     public float jumpDelay;
     public float attackDelay;
     public string idleAnimName;
+    public float onHitInvincibility;
+    public float onHitNoMoveTime;
+    public float switchCooldown;
+    public float switchInvincible;
+    public float switchSuperDuration;
     [SerializeField]
     List<AttackStateInfo> attackInfo;
     [SerializeField]
@@ -41,6 +46,15 @@ public class PlayerController : MonoBehaviour
     float attackTracker;
     float timeSinceLastAttack;
     float noAttackingTime;
+    float hurtingTimer;
+    float switchCooldownTimer;
+    float switchInvinTimer;
+    float switchSuperTimer;
+    int hitCount;
+    public Animator switchAnimator;
+
+
+    bool noActing { get { return hurtingTimer >= onHitInvincibility - onHitNoMoveTime; } }
 
     public static PlayerController Instance { get; private set; }
 
@@ -51,8 +65,10 @@ public class PlayerController : MonoBehaviour
         isGrounded = false;
         timeSinceLastAttack = 0;
         noAttackingTime = 0;
+        hurtingTimer = 0;
         performedAirAttack = false;
         Instance = this;
+        hitCount = 0;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -80,6 +96,15 @@ public class PlayerController : MonoBehaviour
             attackTracker = attackDelay;
         }
     }
+    public void OnSwitch(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Started) return;
+        if (switchCooldownTimer > 0) return;
+
+        switchCooldownTimer = switchCooldown;
+        switchInvinTimer = switchInvincible;
+        switchAnimator.SetTrigger("ChangeTime");
+    }
 
     private void FixedUpdate()
     {
@@ -88,9 +113,24 @@ public class PlayerController : MonoBehaviour
         if (checkGrounded && !isGrounded) noAttackingTime = 0;
         playerAnimator.SetBool("InAir", !checkGrounded);
         isGrounded = checkGrounded;
+        playerAnimator.SetBool("IsMoving", Vector2.zero != rb.linearVelocity);
+
+        playerAnimator.SetBool("IsHurting", noActing);
+
+        attackTracker = Mathf.Clamp(attackTracker - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        jumpTracker = Mathf.Clamp(jumpTracker - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        timeSinceLastAttack = Mathf.Clamp(timeSinceLastAttack - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        noAttackingTime = Mathf.Clamp(noAttackingTime - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        hurtingTimer = Mathf.Clamp(hurtingTimer - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        switchCooldownTimer = Mathf.Clamp(switchCooldownTimer - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        switchInvinTimer = Mathf.Clamp(switchInvinTimer - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+        switchSuperTimer = Mathf.Clamp(switchSuperTimer - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+
+        rb.gravityScale = rb.linearVelocityY > 0 ? upGrav : downGrav;
+
+        if (noActing) return;
 
         if (isGrounded) rb.linearVelocityX = movement.x * Time.fixedDeltaTime * speed;
-        playerAnimator.SetBool("IsMoving", Vector2.zero != rb.linearVelocity);
 
         //if (movement.x > 0) transform.localScale = new Vector3(1, 1, 1);
         //else if (movement.x < 0) transform.localScale = new Vector3(-1, 1, 1);
@@ -102,8 +142,11 @@ public class PlayerController : MonoBehaviour
         }
         if (attackTracker > 0f && noAttackingTime <= 0f)
         {
+            if (switchSuperTimer > 0)
+            {
 
-            if (isGrounded)
+            }
+            else if (isGrounded)
             {
                 foreach (AttackStateInfo stateInfo in attackInfo)
                 {
@@ -138,13 +181,22 @@ public class PlayerController : MonoBehaviour
 
         }
 
-        attackTracker = Mathf.Clamp(attackTracker - Time.fixedDeltaTime, 0f, Mathf.Infinity);
-        jumpTracker = Mathf.Clamp(jumpTracker - Time.fixedDeltaTime, 0f, Mathf.Infinity);
-        timeSinceLastAttack = Mathf.Clamp(timeSinceLastAttack - Time.fixedDeltaTime, 0f, Mathf.Infinity);
-        noAttackingTime = Mathf.Clamp(noAttackingTime - Time.fixedDeltaTime, 0f, Mathf.Infinity);
+    }
 
-        rb.gravityScale = rb.linearVelocityY > 0 ? upGrav : downGrav;
-
+    public void TakeDamage(Vector2 force)
+    {
+        if (onHitInvincibility > 0) { return; }
+        if (switchInvinTimer > 0)
+        {
+            // Do cool things;
+            switchSuperTimer = switchSuperDuration;
+            return;
+        }
+        rb.AddForce(force);
+        hurtingTimer = onHitInvincibility;
+        playerAnimator.Play("PlayerHurt");
+        playerAnimator.SetBool("IsHurting", noActing);
+        hitCount++;
     }
 
     public void PlayParticles(string groupName)

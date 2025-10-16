@@ -4,8 +4,8 @@ public class EnemyBase : MonoBehaviour
 {
     public float health;
     public float staggerLimit;
-    float currHealth;
-    float currStagger;
+    protected float currHealth;
+    protected float currStagger;
 
     virtual public void Start()
     {
