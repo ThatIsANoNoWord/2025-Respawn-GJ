@@ -3,9 +3,17 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using static PlayerController;
 using UnityEditor;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
+    [System.Serializable]
+    public class ParticleGroup
+    {
+        public string name;
+        public List<ParticleSystem> systems;
+    }
+    public List<ParticleGroup> particleGroups = new List<ParticleGroup>();
 
     public float speed;
     public float jumpForce;
@@ -33,7 +41,7 @@ public class PlayerController : MonoBehaviour
     float attackTracker;
     float timeSinceLastAttack;
     float noAttackingTime;
-    
+
     public static PlayerController Instance { get; private set; }
 
     private void Start()
@@ -84,8 +92,8 @@ public class PlayerController : MonoBehaviour
         if (isGrounded) rb.linearVelocityX = movement.x * Time.fixedDeltaTime * speed;
         playerAnimator.SetBool("IsMoving", Vector2.zero != rb.linearVelocity);
 
-        if (movement.x > 0) transform.localScale = new Vector3(1, 1, 1);
-        else if (movement.x < 0) transform.localScale = new Vector3(-1, 1, 1);
+        //if (movement.x > 0) transform.localScale = new Vector3(1, 1, 1);
+        //else if (movement.x < 0) transform.localScale = new Vector3(-1, 1, 1);
 
         if (jumpTracker > 0f && isGrounded)
         {
@@ -137,6 +145,88 @@ public class PlayerController : MonoBehaviour
 
         rb.gravityScale = rb.linearVelocityY > 0 ? upGrav : downGrav;
 
+    }
+
+    public void PlayParticles(string groupName)
+    {
+        foreach (var group in particleGroups)
+        {
+            if (group.name == groupName)
+            {
+                foreach (var ps in group.systems)
+                {
+                    if (group.name == "Day3Attack" && movement.x > 0)
+                    {
+                        ps.transform.localPosition = new Vector3(1.5f, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                    }
+                    else if (group.name == "Day3Attack" && movement.x < 0)
+                    {
+                        ps.transform.localPosition = new Vector3(-1.5f, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                    }
+
+
+                    if (group.name == "Day1Attack" && movement.x > 0)
+                    {
+                        ps.transform.localPosition = new Vector3(2, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                    }
+                    else if (group.name == "Day1Attack" && movement.x < 0)
+                    {
+                        ps.transform.localPosition = new Vector3(-2, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                    }
+
+
+                    if ((group.name == "Day2Attack" || group.name == "DayDashAttack" || group.name == "NightDashAttack") && movement.x > 0)
+                    {
+                        ps.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                    }
+                    else if ((group.name == "Day2Attack" || group.name == "DayDashAttack" || group.name == "NightDashAttack") && movement.x < 0)
+                    {
+                        ps.transform.localRotation = Quaternion.Euler(0, 0, 170);
+                    }
+
+
+                    if (group.name == "Night1Attack" && movement.x > 0)
+                    {
+                        if (ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, -30);
+                        else ps.transform.localRotation = Quaternion.Euler(0, 0, -25);
+                    }
+                    else if (group.name == "Night1Attack" && movement.x < 0)
+                    {
+                        if(ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, 120);
+                        else ps.transform.localRotation = Quaternion.Euler(0, 0, 115);
+                    }
+
+
+                    if (group.name == "Night2Attack" && movement.x > 0)
+                    {
+                        if (ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, -70);
+                        else ps.transform.localRotation = Quaternion.Euler(60, 30, 0);
+                        ps.transform.localPosition = new Vector3(1, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                    }
+                    else if (group.name == "Night2Attack" && movement.x < 0)
+                    {
+                        if (ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, -155);
+                        else ps.transform.localRotation = Quaternion.Euler(-60, 30, 0);
+                        ps.transform.localPosition = new Vector3(-1, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                    }
+
+
+                    if (group.name == "Night3Attack" && movement.x > 0)
+                    {
+                        ps.transform.localRotation = Quaternion.Euler(0, 0, -20);
+                    }
+                    else if (group.name == "Night3Attack"&& movement.x < 0)
+                    {
+                        ps.transform.localRotation = Quaternion.Euler(0, 0, 160);
+                    }
+                    
+                    if (ps == null) continue;
+                    ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    ps.Play();
+                }
+                return;
+            }
+        }
     }
 
 }
