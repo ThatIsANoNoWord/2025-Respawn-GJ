@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     AttackStateInfo airNeutralAttackInfo;
     [SerializeField]
+    AttackStateInfo superAttackInfo;
+    [SerializeField]
     Transform groundCheck;
     Animator playerAnimator;
     Vector2 movement;
@@ -146,7 +148,8 @@ public class PlayerController : MonoBehaviour
         {
             if (switchSuperTimer > 0)
             {
-
+                noAttackingTime = superAttackInfo.timeUntilCancelable;
+                playerAnimator.Play(superAttackInfo.nextAnimationName);
             }
             else if (isGrounded)
             {
@@ -187,14 +190,15 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(Vector2 force)
     {
-        if (onHitInvincibility > 0) { return; }
+        if (hurtingTimer > 0) { return; }
         if (switchInvinTimer > 0)
         {
             // Do cool things;
             switchSuperTimer = switchSuperDuration;
+            hurtingTimer = onHitInvincibility;
             return;
         }
-        rb.AddForce(force);
+        rb.AddForce(force, ForceMode2D.Impulse);
         hurtingTimer = onHitInvincibility;
         playerAnimator.Play("PlayerHurt");
         playerAnimator.SetBool("IsHurting", noActing);

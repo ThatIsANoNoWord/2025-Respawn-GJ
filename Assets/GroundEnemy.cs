@@ -31,18 +31,21 @@ public class GroundEnemy : EnemyBase
 
     public void FixedUpdate()
     {
+        if (currHealth < 0) return;
+
         staggerTime = Mathf.Clamp(staggerTime - Time.fixedDeltaTime, 0f, Mathf.Infinity);
         noAttackTimer = Mathf.Clamp(noAttackTimer - Time.fixedDeltaTime, 0f, Mathf.Infinity);
         attackWait = Mathf.Clamp(attackWait - Time.fixedDeltaTime, 0f, Mathf.Infinity);
 
         animator.SetFloat("Speed", rb.linearVelocity.sqrMagnitude);
+        animator.SetBool("IsStagger", staggerTime > 0f);
 
         if (staggerTime > 0f) return;
 
         if (attackWait > 0f) return;
 
         if (Vector2.Distance(PlayerController.Instance.transform.position, transform.position) < visionDistance &&
-            Physics2D.Raycast(transform.position, PlayerController.Instance.transform.position - transform.position,
+            !Physics2D.Raycast(transform.position, PlayerController.Instance.transform.position - transform.position,
             Vector2.Distance(PlayerController.Instance.transform.position, transform.position), visionObstacleLayer.value))
         {
             animator.SetBool("SeesPlayer", true);
@@ -81,6 +84,16 @@ public class GroundEnemy : EnemyBase
     {
         currHealth -= damage;
         currStagger += stagger;
+        if (currStagger > staggerLimit)
+        {
+            staggerTimer = staggerTime;
+            animator.Play("GroundStagger");
+        }
+
+        if (currHealth < 0)
+        {
+            animator.Play("GroundDeath");
+        }
     }
 
 }
