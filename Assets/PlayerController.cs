@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
         public List<ParticleSystem> systems;
     }
     public List<ParticleGroup> particleGroups = new List<ParticleGroup>();
+    private bool lastDirectionRight = true;
 
     public float speed;
     public float jumpForce;
@@ -134,7 +135,8 @@ public class PlayerController : MonoBehaviour
 
         //if (movement.x > 0) transform.localScale = new Vector3(1, 1, 1);
         //else if (movement.x < 0) transform.localScale = new Vector3(-1, 1, 1);
-
+        if (movement.x > 0) lastDirectionRight = true;
+        else if (movement.x < 0) lastDirectionRight = false;
         if (jumpTracker > 0f && isGrounded)
         {
             jumpTracker = 0f;
@@ -207,55 +209,57 @@ public class PlayerController : MonoBehaviour
             {
                 foreach (var ps in group.systems)
                 {
-                    if (group.name == "Day3Attack" && movement.x > 0)
+                    if (group.name == "Day3Attack" && (movement.x > 0 || lastDirectionRight))
                     {
-                        ps.transform.localPosition = new Vector3(1.5f, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                        if (ps.name == "1") ps.transform.localPosition = new Vector3(1.5f, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                        else ps.transform.localPosition = new Vector3(2.0f, ps.transform.localPosition.y, ps.transform.localPosition.z);
                     }
-                    else if (group.name == "Day3Attack" && movement.x < 0)
+                    else if (group.name == "Day3Attack" && (movement.x < 0 || !lastDirectionRight))
                     {
-                        ps.transform.localPosition = new Vector3(-1.5f, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                        if (ps.name == "1") ps.transform.localPosition = new Vector3(-1.5f, ps.transform.localPosition.y, ps.transform.localPosition.z);
+                        else ps.transform.localPosition = new Vector3(-2.0f, ps.transform.localPosition.y, ps.transform.localPosition.z);
                     }
 
 
-                    if (group.name == "Day1Attack" && movement.x > 0)
+                    if (group.name == "Day1Attack" && (movement.x > 0 || lastDirectionRight))
                     {
                         ps.transform.localPosition = new Vector3(2, ps.transform.localPosition.y, ps.transform.localPosition.z);
                     }
-                    else if (group.name == "Day1Attack" && movement.x < 0)
+                    else if (group.name == "Day1Attack" && (movement.x < 0 || !lastDirectionRight))
                     {
                         ps.transform.localPosition = new Vector3(-2, ps.transform.localPosition.y, ps.transform.localPosition.z);
                     }
 
 
-                    if ((group.name == "Day2Attack" || group.name == "DayDashAttack" || group.name == "NightDashAttack") && movement.x > 0)
+                    if ((group.name == "Day2Attack" || group.name == "DayDashAttack" || group.name == "NightDashAttack") && (movement.x > 0 || lastDirectionRight))
                     {
                         ps.transform.localRotation = Quaternion.Euler(0, 0, 0);
                     }
-                    else if ((group.name == "Day2Attack" || group.name == "DayDashAttack" || group.name == "NightDashAttack") && movement.x < 0)
+                    else if ((group.name == "Day2Attack" || group.name == "DayDashAttack" || group.name == "NightDashAttack") && (movement.x < 0 || !lastDirectionRight))
                     {
                         ps.transform.localRotation = Quaternion.Euler(0, 0, 170);
                     }
 
 
-                    if (group.name == "Night1Attack" && movement.x > 0)
+                    if (group.name == "Night1Attack" && (movement.x > 0 || lastDirectionRight))
                     {
                         if (ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, -30);
                         else ps.transform.localRotation = Quaternion.Euler(0, 0, -25);
                     }
-                    else if (group.name == "Night1Attack" && movement.x < 0)
+                    else if (group.name == "Night1Attack" && (movement.x < 0 || !lastDirectionRight))
                     {
                         if(ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, 120);
                         else ps.transform.localRotation = Quaternion.Euler(0, 0, 115);
                     }
 
 
-                    if (group.name == "Night2Attack" && movement.x > 0)
+                    if (group.name == "Night2Attack" && (movement.x > 0 || lastDirectionRight))
                     {
                         if (ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, -70);
                         else ps.transform.localRotation = Quaternion.Euler(60, 30, 0);
                         ps.transform.localPosition = new Vector3(1, ps.transform.localPosition.y, ps.transform.localPosition.z);
                     }
-                    else if (group.name == "Night2Attack" && movement.x < 0)
+                    else if (group.name == "Night2Attack" && (movement.x < 0 || !lastDirectionRight))
                     {
                         if (ps.name == "1") ps.transform.localRotation = Quaternion.Euler(0, 0, -155);
                         else ps.transform.localRotation = Quaternion.Euler(-60, 30, 0);
@@ -263,11 +267,11 @@ public class PlayerController : MonoBehaviour
                     }
 
 
-                    if (group.name == "Night3Attack" && movement.x > 0)
+                    if (group.name == "Night3Attack" && (movement.x > 0 || lastDirectionRight))
                     {
                         ps.transform.localRotation = Quaternion.Euler(0, 0, -20);
                     }
-                    else if (group.name == "Night3Attack"&& movement.x < 0)
+                    else if (group.name == "Night3Attack"&& (movement.x < 0 || !lastDirectionRight))
                     {
                         ps.transform.localRotation = Quaternion.Euler(0, 0, 160);
                     }
