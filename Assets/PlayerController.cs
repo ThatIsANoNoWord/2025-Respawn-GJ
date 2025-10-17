@@ -40,6 +40,8 @@ public class PlayerController : MonoBehaviour
     AttackStateInfo superAttackInfo;
     [SerializeField]
     Transform groundCheck;
+    [SerializeField]
+    SpriteRenderer playerSprite;
     Animator playerAnimator;
     Vector2 movement;
     Rigidbody2D rb;
@@ -140,6 +142,7 @@ public class PlayerController : MonoBehaviour
         //else if (movement.x < 0) transform.localScale = new Vector3(-1, 1, 1);
         if (movement.x > 0) lastDirectionRight = true;
         else if (movement.x < 0) lastDirectionRight = false;
+        playerSprite.flipX = !lastDirectionRight;
         if (jumpTracker > 0f && isGrounded)
         {
             jumpTracker = 0f;

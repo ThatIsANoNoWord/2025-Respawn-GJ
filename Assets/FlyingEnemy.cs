@@ -30,7 +30,7 @@ public class FlyingEnemy : EnemyBase
 
     void HandleMovement()
     {
-        Vector2 moveDirection = Vector2.zero;
+        Vector2 moveDirection;
 
         if (player != null && Vector2.Distance(transform.position, player.position) < chaseDistance)
         {

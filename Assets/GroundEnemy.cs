@@ -40,7 +40,7 @@ public class GroundEnemy : EnemyBase
         animator.SetFloat("Speed", rb.linearVelocity.sqrMagnitude);
         animator.SetBool("IsStagger", staggerTime > 0f);
 
-        if (staggerTime > 0f) return;
+        if (staggerTimer > 0f) return;
 
         if (attackWait > 0f) return;
 
