@@ -54,6 +54,7 @@ public class PlayerController : MonoBehaviour
     float switchInvinTimer;
     float switchSuperTimer;
     int hitCount;
+    public int HitCount { get => hitCount; }
     public Animator switchAnimator;
 
 
